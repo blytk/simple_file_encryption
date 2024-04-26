@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <string.h>
 
+// I know I don't need to do this, just practicing with the preprocessor directives
 #define A 65
 #define Z 90
 #define a 97
@@ -49,7 +50,7 @@ int main(int argc, char *argv[])
     {
         decrypt(input_file);
     }
-    // 4. Save File
+    return 0;
 }
 
 bool encrypt(FILE *input_file)
@@ -58,14 +59,7 @@ bool encrypt(FILE *input_file)
     int length;
 
     // Create a temporary .txt file to save the encrypted text
-    FILE *encrypted_file = fopen("temp.txt", "w");
-    if (encrypted_file == NULL)
-    {
-        printf("Error creating temp.txt\n");
-        return false;
-    }
-    fclose(encrypted_file);
-    encrypted_file = fopen("temp.txt", "a");
+    FILE *encrypted_file = fopen("encrypted.txt", "w");
     if (encrypted_file == NULL)
     {
         printf("Error creating temp.txt\n");
@@ -74,10 +68,9 @@ bool encrypt(FILE *input_file)
     // get key
     get_key();
     // 1.Read file line by line
-    while (fgets(line_buffer,sizeof(line_buffer),input_file) != NULL)
+    while (fgets(line_buffer, sizeof(line_buffer), input_file) != NULL)
     {
         // encrypt
-        // get key_index
         // I got to go char by char I guess??
         length = strlen(line_buffer);
         for (int i = 0; i < length; i++)
@@ -102,16 +95,55 @@ bool encrypt(FILE *input_file)
             }        
         }
     }
-    // char *fgets(char *str, int n, FILE *stream)
-    
     fclose(encrypted_file);
+    printf("A file encrypted.txt has been created with the encrypted content of your input file\n");
     return true;
 }
 
 bool decrypt(FILE *input_file)
 {
+    char line_buffer[2048];
+    int length;
+
+    // Create a temporary .txt file to save the decrypted text
+    FILE *decrypted_file = fopen("decrypted.txt", "w");
+    if (decrypted_file == NULL)
+    {
+        printf("Error creating temp.txt\n");
+        return false;
+    }
     // get key_index
     get_key();
+    // 1. Read file line by line
+    while (fgets(line_buffer, sizeof(line_buffer), input_file) != NULL)
+    {
+        length = strlen(line_buffer);
+
+        for (int i = 0; i < length; i++)
+        {
+            // decrypt each char
+            // select chars lower / upper. non-letter characters remain unchanged
+            if (line_buffer[i] >= A && line_buffer[i] <= Z)
+            {
+                // UPPERCASE
+                line_buffer[i] = A + (line_buffer[i] - A  - KEY + 26) % 26;
+                
+                fputc(line_buffer[i], decrypted_file);
+            }
+            else if (line_buffer[i] >= a && line_buffer[i] <= z)
+            {
+                // LOWERCASE
+                line_buffer[i] = a + (line_buffer[i] - a  - KEY + 26) % 26;
+                fputc(line_buffer[i], decrypted_file);
+            }
+            else
+            {
+                fputc(line_buffer[i], decrypted_file);
+            }
+        }
+    }
+    fclose(decrypted_file);
+    printf("A file decrypted.txt has been created with the encrypted content of your input file\n");
     return true;
 }
 
