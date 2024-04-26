@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <string.h>
 
-// I know I don't need to do this, just practicing with the preprocessor directives
+// I know I don't need to do this, just practicing with the preprocessor directives. 
 #define A 65
 #define Z 90
 #define a 97
